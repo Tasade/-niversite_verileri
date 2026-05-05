@@ -264,20 +264,45 @@ else:
     long_df["Yil"] = long_df["Yil"].astype(int)
     long_df["Etiket"] = long_df["PROGRAM ADI"] + " (" + long_df["OKUL ADI"].str[:20] + ")"
 
+    # BAU kurumsal renk paleti - acik mavi slayt arkaplani icin kontrast optimize edilmis
+    # Lacivert (#003366), altin (#C8A440) ve turkuaz tamamlayici renkler
     renkler = [
-        "#3b82f6", "#f59e0b", "#10b981", "#e879f9", "#f87171",
-        "#34d399", "#818cf8", "#fbbf24", "#38bdf8", "#fb923c",
-        "#a78bfa", "#4ade80", "#f472b6", "#22d3ee", "#facc15",
+        "#003366",  # BAU lacivert
+        "#C8A440",  # BAU altin
+        "#005B99",  # koyu turkuaz mavi
+        "#8B0000",  # koyu bordo
+        "#1A6B3C",  # koyu yesil
+        "#6B3FA0",  # koyu mor
+        "#B84B00",  # koyu turuncu
+        "#006B6B",  # koyu teal
+        "#003D99",  # saks mavisi
+        "#996600",  # koyu sari
+        "#7B0057",  # koyu fusya
+        "#004D00",  # koyu orman yesili
+        "#8B4000",  # koyu kahverengi
+        "#003355",  # gece mavisi
+        "#5C0A0A",  # koyu kiremit
     ]
+
+    # Acik mavi slayt arkaplan rengi
+    SLIDE_BG    = "#DDEEFF"   # acik mavi - slayt arka plani
+    PLOT_BG     = "#EEF5FF"   # cok acik mavi - grafik ic alani
+    TITLE_COLOR = "#001F4D"   # cok koyu lacivert - maksimum okunabilirlik
+    AXIS_COLOR  = "#002B5E"   # koyu lacivert - eksen yazilari
+    GRID_COLOR  = "#AACCEE"   # orta mavi - grid cizgileri
+    DASH_COLOR  = "#7AAACE"   # orta acik mavi - dikey dashed cizgiler
+    LEGEND_BG   = "rgba(220,235,255,0.92)"  # slayta uyumlu legend arka plani
+    LEGEND_FG   = "#001F4D"   # legend yazi rengi
 
     f7 = go.Figure()
 
+    # Dikey dashed cizgiler her yil icin
     for yil in [2023, 2024, 2025]:
         f7.add_shape(
             type="line",
             x0=yil, x1=yil, y0=0, y1=1,
             xref="x", yref="paper",
-            line=dict(color="#1e3a5f", dash="dash", width=1.2),
+            line=dict(color=DASH_COLOR, dash="dash", width=1.5),
         )
 
     for i, (etiket, grp) in enumerate(long_df.groupby("Etiket")):
@@ -288,11 +313,16 @@ else:
             y=grp_sorted["Siralama"],
             mode="lines+markers+text",
             name=etiket,
-            line=dict(color=renk, width=2.5),
-            marker=dict(size=12, color=renk, line=dict(color="#0a0e1a", width=2), symbol="circle"),
+            line=dict(color=renk, width=3),
+            marker=dict(
+                size=13,
+                color=renk,
+                line=dict(color="#FFFFFF", width=2),
+                symbol="circle",
+            ),
             text=[f"{int(v):,}" for v in grp_sorted["Siralama"]],
             textposition="top center",
-            textfont=dict(color=renk, size=11, family="DM Sans"),
+            textfont=dict(color=renk, size=12, family="DM Sans"),
             hovertemplate=(
                 "<b>%{fullData.name}</b><br>"
                 "Yil: %{x}<br>"
@@ -303,54 +333,59 @@ else:
 
     y_min = long_df["Siralama"].min()
     y_max = long_df["Siralama"].max()
-    y_pad = (y_max - y_min) * 0.15
+    y_pad = (y_max - y_min) * 0.18
 
     # Grafik basligini okul seciminden dinamik uret
     if okul_filtre != "Tumu":
-        grafik_baslik = okul_filtre + " | Yerlesme Sirasi Degisimi (2023 - 2024 - 2025)"
-        yeksen_baslik = okul_filtre + " | YKS Basari Sirasi"
-        xeksen_baslik = "Yil | " + okul_filtre
+        grafik_baslik = "<b>" + okul_filtre + "</b><br><span style='font-size:13px;color:#336699'>YKS Yerlesme Sirasi Degisimi  2023 - 2024 - 2025</span>"
+        yeksen_baslik = "YKS Basari Sirasi  |  " + okul_filtre
+        xeksen_baslik = "Yil  |  " + okul_filtre
     else:
-        grafik_baslik = "Tum Kurumlar | Yerlesme Sirasi Degisimi (2023 - 2024 - 2025)"
+        grafik_baslik = "<b>Tum Kurumlar</b><br><span style='font-size:13px;color:#336699'>YKS Yerlesme Sirasi Degisimi  2023 - 2024 - 2025</span>"
         yeksen_baslik = "YKS Basari Sirasi"
         xeksen_baslik = "Yil"
 
-    f7.update_layout(**layout(
+    f7.update_layout(
+        paper_bgcolor=SLIDE_BG,
+        plot_bgcolor=PLOT_BG,
+        font=dict(color=AXIS_COLOR, family="DM Sans"),
         title=dict(
             text=grafik_baslik,
-            font=dict(color="#e2e8f0", family="Syne", size=15),
+            font=dict(color=TITLE_COLOR, family="Syne", size=17),
             x=0.0,
+            pad=dict(l=10),
         ),
         xaxis=dict(
             tickvals=[2023, 2024, 2025],
             ticktext=["2023", "2024", "2025"],
             gridcolor="rgba(0,0,0,0)",
-            color="#64748b",
-            tickfont=dict(size=14, color="#94a3b8", family="Syne"),
-            title=dict(text=xeksen_baslik, font=dict(color="#475569", size=11)),
+            linecolor=GRID_COLOR,
+            color=AXIS_COLOR,
+            tickfont=dict(size=15, color=AXIS_COLOR, family="Syne"),
+            title=dict(text=xeksen_baslik, font=dict(color=AXIS_COLOR, size=12)),
             range=[2022.6, 2025.4],
         ),
         yaxis=dict(
-            gridcolor="#1e2d50",
-            color="#64748b",
-            title=dict(text=yeksen_baslik, font=dict(color="#475569", size=11)),
-            tickfont=dict(size=11, color="#64748b"),
+            gridcolor=GRID_COLOR,
+            linecolor=GRID_COLOR,
+            color=AXIS_COLOR,
+            title=dict(text=yeksen_baslik, font=dict(color=AXIS_COLOR, size=12)),
+            tickfont=dict(size=12, color=AXIS_COLOR),
             autorange="reversed",
             range=[y_max + y_pad, y_min - y_pad],
         ),
         legend=dict(
-            font=dict(size=10, color="#94a3b8", family="DM Sans"),
-            bgcolor="rgba(13,18,32,0.85)",
-            bordercolor="#1e3a5f",
+            font=dict(size=11, color=LEGEND_FG, family="DM Sans"),
+            bgcolor=LEGEND_BG,
+            bordercolor="#7AAACE",
             borderwidth=1,
             orientation="h",
             x=0, y=-0.22,
         ),
-        height=580,
-        margin=dict(t=80, b=120, l=180, r=40),
+        height=600,
+        margin=dict(t=100, b=130, l=190, r=40),
         hovermode="x unified",
-        plot_bgcolor="rgba(10,14,26,0.95)",
-    ))
+    )
 
     st.plotly_chart(f7, use_container_width=True)
 
