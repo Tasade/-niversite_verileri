@@ -305,10 +305,20 @@ else:
     y_max = long_df["Siralama"].max()
     y_pad = (y_max - y_min) * 0.15
 
+    # Grafik basligini okul seciminden dinamik uret
+    if okul_filtre != "Tumu":
+        grafik_baslik = okul_filtre + " | Yerlesme Sirasi Degisimi (2023 - 2024 - 2025)"
+        yeksen_baslik = okul_filtre + " | YKS Basari Sirasi"
+        xeksen_baslik = "Yil | " + okul_filtre
+    else:
+        grafik_baslik = "Tum Kurumlar | Yerlesme Sirasi Degisimi (2023 - 2024 - 2025)"
+        yeksen_baslik = "YKS Basari Sirasi"
+        xeksen_baslik = "Yil"
+
     f7.update_layout(**layout(
         title=dict(
-            text="Program Bazli Yerlesme Sirasi Degisimi (2023 - 2024 - 2025)",
-            font=dict(color="#e2e8f0", family="Syne", size=16),
+            text=grafik_baslik,
+            font=dict(color="#e2e8f0", family="Syne", size=15),
             x=0.0,
         ),
         xaxis=dict(
@@ -317,13 +327,13 @@ else:
             gridcolor="rgba(0,0,0,0)",
             color="#64748b",
             tickfont=dict(size=14, color="#94a3b8", family="Syne"),
-            title=None,
+            title=dict(text=xeksen_baslik, font=dict(color="#475569", size=11)),
             range=[2022.6, 2025.4],
         ),
         yaxis=dict(
             gridcolor="#1e2d50",
             color="#64748b",
-            title=dict(text="YKS Basari Sirasi", font=dict(color="#64748b", size=11)),
+            title=dict(text=yeksen_baslik, font=dict(color="#475569", size=11)),
             tickfont=dict(size=11, color="#64748b"),
             autorange="reversed",
             range=[y_max + y_pad, y_min - y_pad],
@@ -334,10 +344,10 @@ else:
             bordercolor="#1e3a5f",
             borderwidth=1,
             orientation="h",
-            x=0, y=-0.18,
+            x=0, y=-0.22,
         ),
-        height=560,
-        margin=dict(t=80, b=100, l=60, r=40),
+        height=580,
+        margin=dict(t=80, b=120, l=180, r=40),
         hovermode="x unified",
         plot_bgcolor="rgba(10,14,26,0.95)",
     ))
