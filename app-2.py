@@ -554,9 +554,35 @@ else:
 
         for i, (etiket, grp) in enumerate(long_df.groupby("Etiket")):
             renk = renkler[i % len(renkler)]
-            grp_sorted = grp.sort_values("Yil")
+            grp_sorted = grp.sort_values("Yil").reset_index(drop=True)
 
-            # Dis cember trace (showlegend=False, sadece halka gosterir)
+            # Etiket stratejisi: sadece 2023 ve 2025 noktalarinda, az program varsa 2024 de
+            n_p = long_df["Etiket"].nunique()
+            etiketler = []
+            for j, row in grp_sorted.iterrows():
+                yil = row["Yil"]
+                val = f"{int(row['Siralama']):,}"
+                if n_p <= 8:
+                    # Az program: 3 yilda da goster
+                    etiketler.append(val)
+                elif n_p <= 15:
+                    # Orta: sadece 2023 ve 2025
+                    etiketler.append(val if yil in [2023, 2025] else "")
+                else:
+                    # Cok fazla: sadece 2025 (sag taraf)
+                    etiketler.append(val if yil == 2025 else "")
+
+            textpos = []
+            for j, row in grp_sorted.iterrows():
+                yil = row["Yil"]
+                if yil == 2023:
+                    textpos.append("middle left")
+                elif yil == 2025:
+                    textpos.append("middle right")
+                else:
+                    textpos.append("top center")
+
+            # Dis cember (halka efekti)
             f7.add_trace(go.Scatter(
                 x=grp_sorted["Yil"],
                 y=grp_sorted["Siralama"],
@@ -566,14 +592,14 @@ else:
                 marker=dict(
                     size=22,
                     color="rgba(0,0,0,0)",
-                    line=dict(color=renk, width=2.2),
+                    line=dict(color=renk, width=2.0),
                     symbol="circle",
                 ),
                 hoverinfo="skip",
                 cliponaxis=False,
             ))
 
-            # Ic nokta + cizgi + etiket trace (asil legend)
+            # Ic nokta + cizgi + etiket
             f7.add_trace(go.Scatter(
                 x=grp_sorted["Yil"],
                 y=grp_sorted["Siralama"],
@@ -581,14 +607,14 @@ else:
                 name=etiket,
                 line=dict(color=renk, width=2.5),
                 marker=dict(
-                    size=13,
+                    size=11,
                     color=renk,
                     line=dict(color="#FFFFFF", width=1.5),
                     symbol="circle",
                 ),
-                text=[f"{int(v):,}" for v in grp_sorted["Siralama"]],
-                textposition="top center",
-                textfont=dict(color=renk, size=13, family="DM Sans", weight=700),
+                text=etiketler,
+                textposition=textpos,
+                textfont=dict(color=renk, size=11, family="DM Sans"),
                 hovertemplate=(
                     "<b>%{fullData.name}</b><br>"
                     "Yil: %{x}<br>"
@@ -628,16 +654,13 @@ else:
             leg_size    = 8
             leg_cols    = 5
 
-        # Noktaların uzerindeki etiket boyutunu guncelle (ic nokta ve dis cember ayri)
+        # Marker ve etiket boyutunu program sayisina gore guncelle
         for trace in f7.data:
-            if trace.mode == "markers" and trace.showlegend == False:
-                # Dis cember - daima ic noktanin 1.7 kati
-                trace.marker.size = int(marker_size * 1.7)
-            else:
+            if hasattr(trace, "showlegend") and trace.showlegend == False:
+                trace.marker.size = int(marker_size * 1.9)
+            elif hasattr(trace, "textfont") and trace.textfont is not None:
                 trace.marker.size = marker_size
-                if hasattr(trace, "textfont") and trace.textfont:
-                    trace.textfont.size = txt_size + 1
-                    trace.textfont.weight = 700
+                trace.textfont.size = max(9, txt_size)
 
         # Legend alt boslugu: satir sayisina gore hesapla
         leg_rows = max(1, -(-n_prog // leg_cols))   # tavan bolme
@@ -678,12 +701,14 @@ else:
                 linecolor=GRID_COLOR,
                 color=AXIS_COLOR,
                 title=dict(text=yeksen_baslik, font=dict(color=AXIS_COLOR, size=12)),
-                tickfont=dict(size=12, color=AXIS_COLOR),
+                tickfont=dict(size=11, color=AXIS_COLOR),
                 autorange="reversed",
                 range=[y_max + y_pad, y_min - y_pad],
-                tickmode="auto",
-                nticks=20,
+                tickmode="linear",
+                dtick=100000,
+                tickformat=",",
                 showgrid=True,
+                minor=dict(showgrid=True, gridcolor=GRID_COLOR, dtick=50000, gridwidth=0.4),
             ),
             legend=dict(
                 font=dict(size=leg_size, color=LEGEND_FG, family="DM Sans"),
@@ -696,7 +721,7 @@ else:
                 entrywidthmode="pixels",
             ),
             height=graf_h,
-            margin=dict(t=100, b=bot_margin, l=190, r=40),
+            margin=dict(t=100, b=bot_margin, l=220, r=160),
             hovermode="x unified",
         )
 
