@@ -264,12 +264,21 @@ else:
     long_df["Yil"] = long_df["Yil"].astype(int)
     long_df["Etiket"] = long_df["PROGRAM ADI"] + " (" + long_df["OKUL ADI"].str[:20] + ")"
 
-    f7 = go.Figure()
     renkler = [
         "#3b82f6", "#f59e0b", "#10b981", "#e879f9", "#f87171",
         "#34d399", "#818cf8", "#fbbf24", "#38bdf8", "#fb923c",
         "#a78bfa", "#4ade80", "#f472b6", "#22d3ee", "#facc15",
     ]
+
+    f7 = go.Figure()
+
+    for yil in [2023, 2024, 2025]:
+        f7.add_shape(
+            type="line",
+            x0=yil, x1=yil, y0=0, y1=1,
+            xref="x", yref="paper",
+            line=dict(color="#1e3a5f", dash="dash", width=1.2),
+        )
 
     for i, (etiket, grp) in enumerate(long_df.groupby("Etiket")):
         renk = renkler[i % len(renkler)]
@@ -277,48 +286,60 @@ else:
         f7.add_trace(go.Scatter(
             x=grp_sorted["Yil"],
             y=grp_sorted["Siralama"],
-            mode="lines+markers",
+            mode="lines+markers+text",
             name=etiket,
             line=dict(color=renk, width=2.5),
-            marker=dict(size=10, color=renk, line=dict(color="#0a0e1a", width=2)),
+            marker=dict(size=12, color=renk, line=dict(color="#0a0e1a", width=2), symbol="circle"),
+            text=[f"{int(v):,}" for v in grp_sorted["Siralama"]],
+            textposition="top center",
+            textfont=dict(color=renk, size=11, family="DM Sans"),
             hovertemplate=(
                 "<b>%{fullData.name}</b><br>"
                 "Yil: %{x}<br>"
                 "Siralama: %{y:,.0f}<extra></extra>"
-            )
+            ),
+            cliponaxis=False,
         ))
+
+    y_min = long_df["Siralama"].min()
+    y_max = long_df["Siralama"].max()
+    y_pad = (y_max - y_min) * 0.15
 
     f7.update_layout(**layout(
         title=dict(
-            text="Program Bazli Yerlesme Sirasi (2023-2024-2025)",
-            font=dict(color="#93c5fd", family="Syne", size=15)
+            text="Program Bazli Yerlesme Sirasi Degisimi (2023 - 2024 - 2025)",
+            font=dict(color="#e2e8f0", family="Syne", size=16),
+            x=0.0,
         ),
         xaxis=dict(
             tickvals=[2023, 2024, 2025],
             ticktext=["2023", "2024", "2025"],
-            gridcolor="#1e2d50",
+            gridcolor="rgba(0,0,0,0)",
             color="#64748b",
-            tickfont=dict(size=13, color="#94a3b8"),
-            title=dict(text="Yil", font=dict(color="#64748b")),
+            tickfont=dict(size=14, color="#94a3b8", family="Syne"),
+            title=None,
+            range=[2022.6, 2025.4],
         ),
         yaxis=dict(
             gridcolor="#1e2d50",
             color="#64748b",
-            title=dict(text="YKS Basari Sirasi", font=dict(color="#64748b")),
-            tickfont=dict(size=11),
+            title=dict(text="YKS Basari Sirasi", font=dict(color="#64748b", size=11)),
+            tickfont=dict(size=11, color="#64748b"),
             autorange="reversed",
+            range=[y_max + y_pad, y_min - y_pad],
         ),
         legend=dict(
-            font=dict(size=10, color="#94a3b8"),
-            bgcolor="rgba(13,18,32,0.8)",
+            font=dict(size=10, color="#94a3b8", family="DM Sans"),
+            bgcolor="rgba(13,18,32,0.85)",
             bordercolor="#1e3a5f",
             borderwidth=1,
-            orientation="v",
-            x=1.01, y=1,
+            orientation="h",
+            x=0, y=-0.18,
         ),
-        height=520,
-        margin=dict(t=70, b=40, l=20, r=260),
+        height=560,
+        margin=dict(t=80, b=100, l=60, r=40),
         hovermode="x unified",
+        plot_bgcolor="rgba(10,14,26,0.95)",
     ))
 
     st.plotly_chart(f7, use_container_width=True)
