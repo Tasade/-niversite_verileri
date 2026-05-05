@@ -154,16 +154,69 @@ og = df.groupby("OKUL ADI").agg(
 ).reset_index().dropna().sort_values("y25")
 
 f3 = go.Figure()
-f3.add_trace(go.Bar(name="2023", x=og["OKUL ADI"], y=og["y23"], marker_color="#1e3a5f"))
-f3.add_trace(go.Bar(name="2024", x=og["OKUL ADI"], y=og["y24"], marker_color="#2563eb"))
-f3.add_trace(go.Bar(name="2025", x=og["OKUL ADI"], y=og["y25"], marker_color="#3b82f6"))
+
+# 2023 - BAU altin sarisi
+f3.add_trace(go.Bar(
+    name="2023",
+    x=og["OKUL ADI"], y=og["y23"],
+    marker=dict(color="#C8A440", line=dict(color="#8B6F00", width=1)),
+    text=og["y23"].apply(lambda v: f"{v:,.0f}"),
+    textposition="outside",
+    textfont=dict(size=9, color="#C8A440"),
+))
+
+# 2024 - BAU lacivert
+f3.add_trace(go.Bar(
+    name="2024",
+    x=og["OKUL ADI"], y=og["y24"],
+    marker=dict(color="#003366", line=dict(color="#001133", width=1)),
+    text=og["y24"].apply(lambda v: f"{v:,.0f}"),
+    textposition="outside",
+    textfont=dict(size=9, color="#5599CC"),
+))
+
+# 2025 - turkuaz/teal vurgu
+f3.add_trace(go.Bar(
+    name="2025",
+    x=og["OKUL ADI"], y=og["y25"],
+    marker=dict(color="#0077BB", line=dict(color="#005588", width=1)),
+    text=og["y25"].apply(lambda v: f"{v:,.0f}"),
+    textposition="outside",
+    textfont=dict(size=9, color="#66BBEE"),
+))
+
 f3.update_layout(**layout(
-    barmode="group", height=420,
-    title=dict(text="Okul Bazli Ort Basari Sirasi", font=dict(color="#93c5fd", family="Syne", size=14)),
-    xaxis=dict(tickangle=-40, gridcolor="#1e2d50", color="#64748b", tickfont=dict(size=10)),
-    yaxis=dict(gridcolor="#1e2d50", color="#64748b", title="Ort Siralama"),
-    legend=dict(font=dict(size=11, color="#94a3b8"), bgcolor="rgba(0,0,0,0)"),
-    margin=dict(t=60, b=120, l=20, r=20),
+    barmode="group",
+    height=480,
+    bargap=0.25,
+    bargroupgap=0.08,
+    title=dict(
+        text="Okul Bazli Ortalama Basari Sirasi (2023 - 2024 - 2025)",
+        font=dict(color="#93c5fd", family="Syne", size=14)
+    ),
+    xaxis=dict(
+        tickangle=-40,
+        gridcolor="#1e2d50",
+        color="#64748b",
+        tickfont=dict(size=10, color="#94a3b8"),
+    ),
+    yaxis=dict(
+        gridcolor="#1e2d50",
+        color="#64748b",
+        title=dict(text="Ortalama Basari Sirasi", font=dict(color="#64748b", size=11)),
+        tickfont=dict(size=10, color="#64748b"),
+    ),
+    legend=dict(
+        title=dict(text="Yil", font=dict(color="#93c5fd", size=12)),
+        font=dict(size=12, color="#e2e8f0"),
+        bgcolor="rgba(13,18,32,0.85)",
+        bordercolor="#1e3a5f",
+        borderwidth=1,
+        orientation="h",
+        x=0, y=1.08,
+    ),
+    margin=dict(t=80, b=140, l=20, r=20),
+    uniformtext=dict(mode="hide", minsize=7),
 ))
 st.plotly_chart(f3, use_container_width=True)
 
