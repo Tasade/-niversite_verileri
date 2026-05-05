@@ -17,71 +17,94 @@ st.set_page_config(
 css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
-html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 
-/* Ana sayfa: ince diagonal cizgili kagit doku + sicak gri-krem degrade */
+/* ── Temel font ── */
+html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; color: #1E1A14; }
+
+/* ── Ana sayfa zemin: sicak keten krem + cok ince nokta doku ── */
 [data-testid="stAppViewContainer"] {
-    background-color: #F0EDE8;
-    background-image:
-        linear-gradient(135deg, rgba(200,185,165,0.18) 25%, transparent 25%),
-        linear-gradient(225deg, rgba(200,185,165,0.18) 25%, transparent 25%),
-        linear-gradient(45deg,  rgba(200,185,165,0.18) 25%, transparent 25%),
-        linear-gradient(315deg, rgba(200,185,165,0.18) 25%, transparent 25%);
-    background-size: 48px 48px;
-    background-position: 0 0, 24px 0, 24px -24px, 0px 24px;
+    background-color: #EDE8E0;
+    background-image: radial-gradient(circle, rgba(160,140,110,0.22) 1px, transparent 1px);
+    background-size: 22px 22px;
 }
 
-/* Icerik alani: hafif krem beyaz, yuzen kart etkisi */
+/* ── Icerik alani: sari krem kart, hafif golge ── */
 [data-testid="stAppViewBlockContainer"] {
-    background: rgba(250,248,245,0.82);
-    border-radius: 18px;
+    background: rgba(252,249,244,0.90);
+    border-radius: 16px;
     padding: 2rem 2.5rem;
-    box-shadow: 0 4px 32px rgba(120,100,80,0.10);
-    backdrop-filter: blur(2px);
+    box-shadow: 0 2px 24px rgba(100,80,50,0.08);
 }
 
-/* Sidebar: duman grisi, ince sagdan border */
+/* ── Sidebar: krem bej, koyu kahve yazi ── */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #EAE6E0 0%, #DDD8D0 100%) !important;
-    border-right: 1px solid #C8BFB0 !important;
+    background: linear-gradient(180deg, #F0EBE2 0%, #E6DFD5 100%) !important;
+    border-right: 2px solid #C8BCA8 !important;
 }
-[data-testid="stSidebar"] * { color: #2C2416 !important; }
-[data-testid="stSidebar"] .stSelectbox label { color: #5C4F3D !important; font-size: 0.82rem; letter-spacing: 0.05em; }
+/* Sidebar icindeki TUM yazılar */
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] div,
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3,
+[data-testid="stSidebar"] .stMarkdown,
+[data-testid="stSidebar"] .stSelectbox label,
+[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] span,
+[data-testid="stSidebar"] .stCaption { color: #2A1F12 !important; }
 
-h1, h2, h3 { font-family: 'Syne', sans-serif !important; color: #2C2416 !important; }
+/* Selectbox dropdown ok oku rengi */
+[data-testid="stSidebar"] svg { fill: #2A1F12 !important; }
 
-/* Metrik kartlar: mat krem, altin kenari */
+/* Selectbox kutusu */
+[data-baseweb="select"] {
+    background-color: #FAF6F0 !important;
+    border-color: #C0B090 !important;
+    border-radius: 8px !important;
+}
+[data-baseweb="select"] span { color: #1E1A14 !important; }
+
+/* Multiselect kutusu */
+[data-baseweb="input"] { background-color: #FAF6F0 !important; }
+.stMultiSelect [data-baseweb="tag"] { background-color: #D4C4A0 !important; color: #1E1A14 !important; }
+
+/* ── Basliklar ── */
+h1, h2, h3 { font-family: 'Syne', sans-serif !important; color: #1E1A14 !important; }
+
+/* ── Metrik kartlar ── */
 .mcard {
-    background: linear-gradient(135deg, #FAF8F4, #F2EDE4);
-    border: 1px solid #D4C8B0;
-    border-top: 3px solid #B8A882;
-    border-radius: 14px;
-    padding: 18px 20px;
+    background: linear-gradient(135deg, #FAF6EE, #F0E8D8);
+    border: 1px solid #D0C4A8;
+    border-top: 3px solid #A89060;
+    border-radius: 12px;
+    padding: 16px 18px;
     text-align: center;
-    box-shadow: 0 2px 12px rgba(120,100,70,0.10);
+    box-shadow: 0 2px 10px rgba(100,80,40,0.08);
 }
-.mcard .lbl { color: #8C7B65; font-size: 0.75rem; letter-spacing: 0.09em; text-transform: uppercase; margin-bottom: 6px; }
-.mcard .val { color: #2C2416; font-size: 1.7rem; font-weight: 700; font-family: 'Syne', sans-serif; }
-.mcard .pos { color: #3A7D52; font-size: 0.85rem; font-weight: 500; }
-.mcard .neg { color: #B84444; font-size: 0.85rem; font-weight: 500; }
+.mcard .lbl { color: #7A6A52; font-size: 0.74rem; letter-spacing: 0.09em; text-transform: uppercase; margin-bottom: 5px; }
+.mcard .val { color: #1E1A14; font-size: 1.65rem; font-weight: 700; font-family: 'Syne', sans-serif; }
+.mcard .pos { color: #2E6B45; font-size: 0.83rem; font-weight: 600; }
+.mcard .neg { color: #962828; font-size: 0.83rem; font-weight: 600; }
 
-/* Bolum basliklari: altin sol cizgi */
+/* ── Bolum basliklari ── */
 .sec {
     font-family: 'Syne', sans-serif;
-    font-size: 1.05rem;
+    font-size: 1.0rem;
     font-weight: 700;
-    color: #3D3020;
-    border-left: 4px solid #B8A060;
-    background: linear-gradient(90deg, rgba(184,160,96,0.10) 0%, transparent 80%);
-    padding: 8px 0 8px 14px;
-    margin: 28px 0 16px;
+    color: #2A1F12;
+    border-left: 4px solid #A89060;
+    background: linear-gradient(90deg, rgba(168,144,96,0.12) 0%, transparent 70%);
+    padding: 7px 0 7px 14px;
+    margin: 26px 0 14px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
     border-radius: 0 6px 6px 0;
 }
 
-/* Genel yazi rengi */
-p, span, label, div { color: #3D3020; }
+/* ── Genel metin: sayfa icerigindeki tum yazilar koyu ── */
+.stMarkdown p, .stMarkdown span, .stCaption { color: #3A3020 !important; }
+.stDataFrame { border-radius: 10px; overflow: hidden; }
 </style>
 """
 st.markdown(css, unsafe_allow_html=True)
@@ -123,9 +146,9 @@ def load_and_clean():
 df = load_and_clean()
 
 BASE = dict(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(17,24,39,0.8)",
-    font=dict(color="#e2e8f0", family="DM Sans"),
+    paper_bgcolor="rgba(252,249,244,0.0)",
+    plot_bgcolor="rgba(248,244,238,0.85)",
+    font=dict(color="#1E1A14", family="DM Sans"),
     margin=dict(t=60, b=30, l=20, r=20),
 )
 
@@ -156,8 +179,8 @@ if trend_sec != "Tumu":
 if len(filt) == 0:
     st.warning("Analiz edilecek veri bulunamadi. Lutfen farkli filtre secenekleri deneyin.")
 else:
-    st.markdown("<h1 style='color:#e2e8f0; font-family:Syne,sans-serif;'>BAU Program Basari Istatistikleri</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#64748b;'>Balikesir Universitesi - 2023-2025 - YKS Basari Sirasi Analizi</p>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color:#1E1A14; font-family:Syne,sans-serif; font-size:1.9rem;'>BAU Program Basari Istatistikleri</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#6B5C45; font-size:0.95rem;'>Balikesir Universitesi  -  2023-2025  -  YKS Basari Sirasi Analizi</p>", unsafe_allow_html=True)
 
     iyilesen = filt[filt["TREND"].isin(["Iyilesme", "Guclu Iyilesme"])]
     gerileyen = filt[filt["TREND"] == "Gerileme"]
@@ -170,10 +193,10 @@ else:
 
     c1, c2, c3, c4, c5 = st.columns(5)
     c1.markdown(f'<div class="mcard"><div class="lbl">Toplam Program</div><div class="val">{len(filt)}</div><div class="pos">{filt["OKUL ADI"].nunique()} kurum</div></div>', unsafe_allow_html=True)
-    c2.markdown(f'<div class="mcard"><div class="lbl">Iyilesen</div><div class="val" style="color:#34d399">{len(iyilesen)}</div><div class="pos">%{pct:.0f}</div></div>', unsafe_allow_html=True)
-    c3.markdown(f'<div class="mcard"><div class="lbl">Gerileyen</div><div class="val" style="color:#f87171">{len(gerileyen)}</div><div class="neg">sira dustu</div></div>', unsafe_allow_html=True)
+    c2.markdown(f'<div class="mcard"><div class="lbl">Iyilesen</div><div class="val" style="color:#2E6B45">{len(iyilesen)}</div><div class="pos">%{pct:.0f}</div></div>', unsafe_allow_html=True)
+    c3.markdown(f'<div class="mcard"><div class="lbl">Gerileyen</div><div class="val" style="color:#962828">{len(gerileyen)}</div><div class="neg">sira dustu</div></div>', unsafe_allow_html=True)
     c4.markdown(f'<div class="mcard"><div class="lbl">Ort 2025 Sira</div><div class="val">{ort25:,.0f}</div><div class="{"pos" if delta>0 else "neg"}">{abs(delta):,.0f} fark</div></div>', unsafe_allow_html=True)
-    c5.markdown(f'<div class="mcard"><div class="lbl">En Iyi Sira</div><div class="val" style="color:#fbbf24">{int(filt["2025"].min()):,}</div><div class="pos">{en_iyi_ad}</div></div>', unsafe_allow_html=True)
+    c5.markdown(f'<div class="mcard"><div class="lbl">En Iyi Sira</div><div class="val" style="color:#8B6914">{int(filt["2025"].min()):,}</div><div class="pos">{en_iyi_ad}</div></div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown('<div class="sec">Trend ve Dagilim</div>', unsafe_allow_html=True)
@@ -185,7 +208,7 @@ else:
         tc.columns = ["Trend", "Sayi"]
         cmap = {"Guclu Iyilesme": "#059669", "Iyilesme": "#34d399", "Stabil": "#94a3b8", "Gerileme": "#f87171", "Yeni": "#818cf8"}
         f1 = px.pie(tc, names="Trend", values="Sayi", hole=0.55, color="Trend", color_discrete_map=cmap, title="Trend Dagilimi")
-        f1.update_layout(**layout(title_font=dict(color="#93c5fd", family="Syne", size=14), legend=dict(font=dict(color="#94a3b8", size=11), bgcolor="rgba(0,0,0,0)")))
+        f1.update_layout(**layout(title_font=dict(color="#2A1F12", family="Syne", size=14), legend=dict(font=dict(color="#3A3020", size=11), bgcolor="rgba(0,0,0,0)")))
         st.plotly_chart(f1, use_container_width=True)
 
     with cb:
@@ -196,7 +219,7 @@ else:
                         labels={"2023": "Siralama 2023", "2025": "Siralama 2025"},
                         color_discrete_sequence=["#3b82f6", "#f59e0b", "#10b981"])
         mv = max(sc["2023"].max(), sc["2025"].max()) if len(sc) > 0 else 2000000
-        f2.add_shape(type="line", x0=0, y0=0, x1=mv, y1=mv, line=dict(color="#334155", dash="dot", width=1.5))
+        f2.add_shape(type="line", x0=0, y0=0, x1=mv, y1=mv, line=dict(color="#B8A882", dash="dot", width=1.5))
         f2.update_layout(**layout(
             title_font=dict(color="#93c5fd", family="Syne", size=13),
             xaxis=dict(gridcolor="#1e2d50", color="#64748b"),
@@ -354,7 +377,7 @@ else:
     ))
     st.plotly_chart(f6, use_container_width=True)
 
-    st.markdown('<div class="sec">Ham Veri</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sec">Ham Veri Tablosu</div>', unsafe_allow_html=True)
 
     disp = filt[["OKUL ADI", "PROGRAM ADI", "2023", "2024", "2025", "25/23", "25/24", "TREND", "TUR"]].copy()
     for col in ["2023", "2024"]:
@@ -534,4 +557,4 @@ else:
             st.dataframe(tablo.rename(columns={"OKUL ADI":"Okul","PROGRAM ADI":"Program","25/23":"Degisim"}),
                          use_container_width=True, hide_index=True)
 
-    st.caption("Balikesir Universitesi - YKS Program Basari Sirasi - Kaynak: OSYM")
+    st.markdown("<p style='color:#8C7B65; font-size:0.78rem; text-align:center; margin-top:20px;'>Balikesir Universitesi  -  YKS Program Basari Sirasi  -  Kaynak: OSYM</p>", unsafe_allow_html=True)
