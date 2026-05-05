@@ -586,7 +586,7 @@ else:
                     line=dict(color="#FFFFFF", width=1.5),
                     symbol="circle",
                 ),
-                text=[f"{int(v):,}" for v in grp_sorted["Siralama"]],
+                text=["<br>" + f"{int(v):,}" for v in grp_sorted["Siralama"]],
                 textposition="top center",
                 textfont=dict(color=renk, size=13, family="DM Sans", weight=700),
                 hovertemplate=(
