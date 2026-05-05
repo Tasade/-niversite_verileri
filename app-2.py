@@ -1,3 +1,6 @@
+import subprocess, sys
+subprocess.run([sys.executable, "-m", "pip", "install", "plotly", "openpyxl", "-q"], check=True)
+
 import pandas as pd
 import numpy as np
 import streamlit as st
