@@ -509,7 +509,7 @@ else:
             value_name="Siralama"
         ).dropna(subset=["Siralama"])
         long_df["Yil"] = long_df["Yil"].astype(int)
-        long_df["Etiket"] = long_df["PROGRAM ADI"] + " (" + long_df["OKUL ADI"].str[:20] + ")"
+        long_df["Etiket"] = long_df["PROGRAM ADI"].str[:28] + " (" + long_df["OKUL ADI"].str[:15] + ")"
 
         # BAU kurumsal renk paleti - acik mavi slayt arkaplani icin kontrast optimize edilmis
         # Lacivert (#003366), altin (#C8A440) ve turkuaz tamamlayici renkler
@@ -582,6 +582,42 @@ else:
         y_max = long_df["Siralama"].max()
         y_pad = (y_max - y_min) * 0.18
 
+        # Program sayisina gore dinamik yukseklik ve font
+        n_prog = long_df["Etiket"].nunique()
+        if n_prog <= 5:
+            graf_h      = 560
+            marker_size = 13
+            txt_size    = 12
+            leg_size    = 11
+            leg_cols    = 2
+        elif n_prog <= 10:
+            graf_h      = 680
+            marker_size = 10
+            txt_size    = 10
+            leg_size    = 10
+            leg_cols    = 3
+        elif n_prog <= 20:
+            graf_h      = 820
+            marker_size = 8
+            txt_size    = 9
+            leg_size    = 9
+            leg_cols    = 4
+        else:
+            graf_h      = 1000
+            marker_size = 7
+            txt_size    = 8
+            leg_size    = 8
+            leg_cols    = 5
+
+        # Noktaların uzerindeki etiket boyutunu guncelle
+        for trace in f7.data:
+            trace.marker.size = marker_size
+            trace.textfont.size = txt_size
+
+        # Legend alt boslugu: satir sayisina gore hesapla
+        leg_rows = max(1, -(-n_prog // leg_cols))   # tavan bolme
+        bot_margin = 60 + leg_rows * 26
+
         # Grafik basligini okul seciminden dinamik uret
         if okul_filtre != "Tumu":
             grafik_baslik = "<b>" + okul_filtre + "</b><br><span style='font-size:13px;color:#336699'>YKS Yerlesme Sirasi Degisimi  2023 - 2024 - 2025</span>"
@@ -622,15 +658,17 @@ else:
                 range=[y_max + y_pad, y_min - y_pad],
             ),
             legend=dict(
-                font=dict(size=11, color=LEGEND_FG, family="DM Sans"),
+                font=dict(size=leg_size, color=LEGEND_FG, family="DM Sans"),
                 bgcolor=LEGEND_BG,
                 bordercolor="#7AAACE",
                 borderwidth=1,
                 orientation="h",
-                x=0, y=-0.22,
+                x=0, y=-0.05,
+                entrywidth=0,
+                entrywidthmode="pixels",
             ),
-            height=600,
-            margin=dict(t=100, b=130, l=190, r=40),
+            height=graf_h,
+            margin=dict(t=100, b=bot_margin, l=190, r=40),
             hovermode="x unified",
         )
 
