@@ -140,6 +140,14 @@ canvas.dvn-canvas { background-color: #1C1610 !important; }
 
 /* ── Genel metin ── */
 .stMarkdown p, .stMarkdown span, .stCaption { color: #3A3020 !important; }
+
+/* ── Expander baslik ve icerik ── */
+[data-testid="stExpander"] summary p,
+[data-testid="stExpander"] summary span,
+[data-testid="stExpander"] summary div,
+[data-testid="stExpander"] > details > summary { color: #2A1F12 !important; font-weight: 600; }
+[data-testid="stExpander"] { border: 1px solid #C8B890 !important; border-radius: 10px !important; background: #F8F3EC !important; }
+[data-testid="stExpander"] svg { fill: #6B5A3A !important; }
 </style>
 """
 st.markdown(css, unsafe_allow_html=True)
