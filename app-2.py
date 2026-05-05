@@ -180,6 +180,50 @@ def load_and_clean():
 
 df = load_and_clean()
 
+def render_table(df, height_px=420):
+    """DataFrame'i koyu temali, tamamen okunabilir HTML tabloya donusturur."""
+    cols = df.columns.tolist()
+    header_cells = "".join(
+        f"<th style='"
+        "background:#2A1E12; color:#E8D0A0; font-family:Syne,sans-serif; "
+        "font-size:0.78rem; font-weight:700; letter-spacing:0.07em; "
+        "text-transform:uppercase; padding:10px 12px; border-bottom:2px solid #6A5030; "
+        "white-space:nowrap;"
+        f"'>{c}</th>"
+        for c in cols
+    )
+    rows_html = ""
+    for idx, row in enumerate(df.itertuples(index=False)):
+        bg = "#1C1610" if idx % 2 == 0 else "#231A0E"
+        cells = "".join(
+            f"<td style='"
+            "color:#D4BF98; font-size:0.82rem; padding:8px 12px; "
+            f"border-bottom:1px solid #3A2A18; background:{bg}; white-space:nowrap;"
+            f"'>{v}</td>"
+            for v in row
+        )
+        rows_html += f"<tr>{cells}</tr>"
+
+    table_html = f"""
+    <div style='
+        background:#1C1610;
+        border-radius:12px;
+        border:1px solid #4A3520;
+        box-shadow:0 4px 20px rgba(10,6,2,0.30);
+        overflow:hidden;
+        margin-bottom:8px;
+    '>
+        <div style='overflow:auto; max-height:{height_px}px;'>
+            <table style='width:100%; border-collapse:collapse;'>
+                <thead><tr>{header_cells}</tr></thead>
+                <tbody>{rows_html}</tbody>
+            </table>
+        </div>
+    </div>
+    """
+    st.markdown(table_html, unsafe_allow_html=True)
+
+
 BASE = dict(
     paper_bgcolor="rgba(252,249,244,0.0)",
     plot_bgcolor="rgba(248,244,238,0.85)",
@@ -422,35 +466,7 @@ else:
     disp["25/24"] = disp["25/24"].apply(lambda x: f"{x:+,.0f}" if pd.notna(x) else "-")
     disp_rename = disp.rename(columns={"OKUL ADI":"Okul","PROGRAM ADI":"Program","25/23":"D23-25","25/24":"D24-25","TUR":"Tur"})
 
-    # Koyu sarmalayici
-    st.markdown("""
-    <div style='
-        background: linear-gradient(135deg, #1C1610, #251D14);
-        border-radius: 14px;
-        padding: 4px;
-        box-shadow: 0 4px 24px rgba(20,14,6,0.28);
-        border: 1px solid #3A2E1E;
-    '>
-    """, unsafe_allow_html=True)
-
-    st.dataframe(
-        disp_rename,
-        use_container_width=True,
-        hide_index=True,
-        height=400,
-        column_config={
-            "Okul":    st.column_config.TextColumn("Okul", width="medium"),
-            "Program": st.column_config.TextColumn("Program", width="large"),
-            "2023":    st.column_config.TextColumn("2023", width="small"),
-            "2024":    st.column_config.TextColumn("2024", width="small"),
-            "2025":    st.column_config.TextColumn("2025", width="small"),
-            "D23-25":  st.column_config.TextColumn("D 23-25", width="small"),
-            "D24-25":  st.column_config.TextColumn("D 24-25", width="small"),
-            "TREND":   st.column_config.TextColumn("Trend", width="small"),
-            "Tur":     st.column_config.TextColumn("Tur", width="small"),
-        }
-    )
-    st.markdown("</div>", unsafe_allow_html=True)
+    render_table(disp_rename, height_px=420)
 
     st.markdown('<div class="sec">Yillara Gore Yerlesme Sirasi Degisimi</div>', unsafe_allow_html=True)
 
@@ -618,7 +634,6 @@ else:
             tablo["2024"] = tablo["2024"].apply(lambda x: f"{x:,.0f}" if pd.notna(x) else "Yeni")
             tablo["2025"] = tablo["2025"].apply(lambda x: f"{x:,.0f}" if pd.notna(x) else "-")
             tablo["25/23"] = tablo["25/23"].apply(lambda x: f"{x:+,.0f}" if pd.notna(x) else "-")
-            st.dataframe(tablo.rename(columns={"OKUL ADI":"Okul","PROGRAM ADI":"Program","25/23":"Degisim"}),
-                         use_container_width=True, hide_index=True)
+            render_table(tablo.rename(columns={"OKUL ADI":"Okul","PROGRAM ADI":"Program","25/23":"Degisim"}), height_px=340)
 
     st.markdown("<p style='color:#8C7B65; font-size:0.78rem; text-align:center; margin-top:20px;'>Balikesir Universitesi  -  YKS Program Basari Sirasi  -  Kaynak: OSYM</p>", unsafe_allow_html=True)
