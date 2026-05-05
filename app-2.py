@@ -229,4 +229,107 @@ disp["25/24"] = disp["25/24"].apply(lambda x: f"{x:+,.0f}" if pd.notna(x) else "
 st.dataframe(disp.rename(columns={"OKUL ADI":"Okul","PROGRAM ADI":"Program","25/23":"D23-25","25/24":"D24-25","TUR":"Tur"}),
              use_container_width=True, hide_index=True, height=400)
 
+st.markdown('<div class="sec">Yillara Gore Yerlesme Sirasi Degisimi</div>', unsafe_allow_html=True)
+
+st.markdown("<p style='color:#64748b; font-size:0.9rem; margin-bottom:16px;'>Program secin — noktalar her yilin sirasini, cizgi ise trendi gosterir. Dusuk sira = daha basarili.</p>", unsafe_allow_html=True)
+
+col_prog1, col_prog2 = st.columns([2, 1])
+
+with col_prog1:
+    program_listesi = sorted(df["PROGRAM ADI"].unique().tolist())
+    secili_programlar = st.multiselect(
+        "Program Sec (coklu secim yapabilirsiniz)",
+        program_listesi,
+        default=program_listesi[:5]
+    )
+
+with col_prog2:
+    okul_filtre = st.selectbox("Okul Filtresi", ["Tumu"] + sorted(df["OKUL ADI"].unique().tolist()), key="okul_puan")
+
+puan_df = df.copy()
+if okul_filtre != "Tumu":
+    puan_df = puan_df[puan_df["OKUL ADI"] == okul_filtre]
+if secili_programlar:
+    puan_df = puan_df[puan_df["PROGRAM ADI"].isin(secili_programlar)]
+
+if len(puan_df) == 0:
+    st.warning("Secilen filtrelere gore veri bulunamadi.")
+else:
+    long_df = puan_df.melt(
+        id_vars=["OKUL ADI", "PROGRAM ADI"],
+        value_vars=["2023", "2024", "2025"],
+        var_name="Yil",
+        value_name="Siralama"
+    ).dropna(subset=["Siralama"])
+    long_df["Yil"] = long_df["Yil"].astype(int)
+    long_df["Etiket"] = long_df["PROGRAM ADI"] + " (" + long_df["OKUL ADI"].str[:20] + ")"
+
+    f7 = go.Figure()
+    renkler = [
+        "#3b82f6", "#f59e0b", "#10b981", "#e879f9", "#f87171",
+        "#34d399", "#818cf8", "#fbbf24", "#38bdf8", "#fb923c",
+        "#a78bfa", "#4ade80", "#f472b6", "#22d3ee", "#facc15",
+    ]
+
+    for i, (etiket, grp) in enumerate(long_df.groupby("Etiket")):
+        renk = renkler[i % len(renkler)]
+        grp_sorted = grp.sort_values("Yil")
+        f7.add_trace(go.Scatter(
+            x=grp_sorted["Yil"],
+            y=grp_sorted["Siralama"],
+            mode="lines+markers",
+            name=etiket,
+            line=dict(color=renk, width=2.5),
+            marker=dict(size=10, color=renk, line=dict(color="#0a0e1a", width=2)),
+            hovertemplate=(
+                "<b>%{fullData.name}</b><br>"
+                "Yil: %{x}<br>"
+                "Siralama: %{y:,.0f}<extra></extra>"
+            )
+        ))
+
+    f7.update_layout(**layout(
+        title=dict(
+            text="Program Bazli Yerlesme Sirasi (2023-2024-2025)",
+            font=dict(color="#93c5fd", family="Syne", size=15)
+        ),
+        xaxis=dict(
+            tickvals=[2023, 2024, 2025],
+            ticktext=["2023", "2024", "2025"],
+            gridcolor="#1e2d50",
+            color="#64748b",
+            tickfont=dict(size=13, color="#94a3b8"),
+            title=dict(text="Yil", font=dict(color="#64748b")),
+        ),
+        yaxis=dict(
+            gridcolor="#1e2d50",
+            color="#64748b",
+            title=dict(text="YKS Basari Sirasi", font=dict(color="#64748b")),
+            tickfont=dict(size=11),
+            autorange="reversed",
+        ),
+        legend=dict(
+            font=dict(size=10, color="#94a3b8"),
+            bgcolor="rgba(13,18,32,0.8)",
+            bordercolor="#1e3a5f",
+            borderwidth=1,
+            orientation="v",
+            x=1.01, y=1,
+        ),
+        height=520,
+        margin=dict(t=70, b=40, l=20, r=260),
+        hovermode="x unified",
+    ))
+
+    st.plotly_chart(f7, use_container_width=True)
+
+    with st.expander("Tablo olarak goster"):
+        tablo = puan_df[["OKUL ADI", "PROGRAM ADI", "2023", "2024", "2025", "25/23"]].copy()
+        tablo["2023"] = tablo["2023"].apply(lambda x: f"{x:,.0f}" if pd.notna(x) else "Yeni")
+        tablo["2024"] = tablo["2024"].apply(lambda x: f"{x:,.0f}" if pd.notna(x) else "Yeni")
+        tablo["2025"] = tablo["2025"].apply(lambda x: f"{x:,.0f}" if pd.notna(x) else "-")
+        tablo["25/23"] = tablo["25/23"].apply(lambda x: f"{x:+,.0f}" if pd.notna(x) else "-")
+        st.dataframe(tablo.rename(columns={"OKUL ADI":"Okul","PROGRAM ADI":"Program","25/23":"Degisim"}),
+                     use_container_width=True, hide_index=True)
+
 st.caption("Balikesir Universitesi - YKS Program Basari Sirasi - Kaynak: OSYM")
