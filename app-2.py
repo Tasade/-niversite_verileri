@@ -155,67 +155,92 @@ og = df.groupby("OKUL ADI").agg(
 
 f3 = go.Figure()
 
-# 2023 - BAU altin sarisi
+# Pastel palet - akademik, sik, birbirinden net ayirt edilebilir
+PASTEL_2023 = "#A8C7E8"   # pastel celik mavisi
+PASTEL_2024 = "#F4B183"   # pastel seftali turuncu
+PASTEL_2025 = "#9DC19D"   # pastel adacayi yesili
+BORDER_2023 = "#6A9EC4"
+BORDER_2024 = "#D4845A"
+BORDER_2025 = "#6A9C6A"
+LABEL_2023  = "#3A6E9C"
+LABEL_2024  = "#A85A2A"
+LABEL_2025  = "#3A703A"
+
 f3.add_trace(go.Bar(
     name="2023",
     x=og["OKUL ADI"], y=og["y23"],
-    marker=dict(color="#C8A440", line=dict(color="#8B6F00", width=1)),
-    text=og["y23"].apply(lambda v: f"{v:,.0f}"),
+    marker=dict(
+        color=PASTEL_2023,
+        line=dict(color=BORDER_2023, width=1.2),
+        opacity=0.88,
+    ),
+    text=og["y23"].apply(lambda v: f"{int(v):,}"),
     textposition="outside",
-    textfont=dict(size=9, color="#C8A440"),
+    textfont=dict(size=9, color=LABEL_2023, family="DM Sans"),
 ))
 
-# 2024 - BAU lacivert
 f3.add_trace(go.Bar(
     name="2024",
     x=og["OKUL ADI"], y=og["y24"],
-    marker=dict(color="#003366", line=dict(color="#001133", width=1)),
-    text=og["y24"].apply(lambda v: f"{v:,.0f}"),
+    marker=dict(
+        color=PASTEL_2024,
+        line=dict(color=BORDER_2024, width=1.2),
+        opacity=0.88,
+    ),
+    text=og["y24"].apply(lambda v: f"{int(v):,}"),
     textposition="outside",
-    textfont=dict(size=9, color="#5599CC"),
+    textfont=dict(size=9, color=LABEL_2024, family="DM Sans"),
 ))
 
-# 2025 - turkuaz/teal vurgu
 f3.add_trace(go.Bar(
     name="2025",
     x=og["OKUL ADI"], y=og["y25"],
-    marker=dict(color="#0077BB", line=dict(color="#005588", width=1)),
-    text=og["y25"].apply(lambda v: f"{v:,.0f}"),
+    marker=dict(
+        color=PASTEL_2025,
+        line=dict(color=BORDER_2025, width=1.2),
+        opacity=0.88,
+    ),
+    text=og["y25"].apply(lambda v: f"{int(v):,}"),
     textposition="outside",
-    textfont=dict(size=9, color="#66BBEE"),
+    textfont=dict(size=9, color=LABEL_2025, family="DM Sans"),
 ))
 
 f3.update_layout(**layout(
     barmode="group",
-    height=480,
-    bargap=0.25,
-    bargroupgap=0.08,
+    height=500,
+    bargap=0.22,
+    bargroupgap=0.06,
     title=dict(
-        text="Okul Bazli Ortalama Basari Sirasi (2023 - 2024 - 2025)",
-        font=dict(color="#93c5fd", family="Syne", size=14)
+        text="Okul Bazli Ortalama Basari Sirasi  (2023 - 2024 - 2025)",
+        font=dict(color="#CBD5E1", family="Syne", size=14),
     ),
     xaxis=dict(
         tickangle=-40,
         gridcolor="#1e2d50",
         color="#64748b",
-        tickfont=dict(size=10, color="#94a3b8"),
+        tickfont=dict(size=10, color="#94a3b8", family="DM Sans"),
+        showline=True,
+        linecolor="#2d3f5c",
     ),
     yaxis=dict(
         gridcolor="#1e2d50",
         color="#64748b",
-        title=dict(text="Ortalama Basari Sirasi", font=dict(color="#64748b", size=11)),
-        tickfont=dict(size=10, color="#64748b"),
+        title=dict(text="Ortalama Basari Sirasi", font=dict(color="#94a3b8", size=11)),
+        tickfont=dict(size=10, color="#94a3b8"),
+        showline=True,
+        linecolor="#2d3f5c",
     ),
     legend=dict(
-        title=dict(text="Yil", font=dict(color="#93c5fd", size=12)),
-        font=dict(size=12, color="#e2e8f0"),
-        bgcolor="rgba(13,18,32,0.85)",
-        bordercolor="#1e3a5f",
+        title=dict(text="Yil", font=dict(color="#CBD5E1", size=12, family="Syne")),
+        font=dict(size=12, color="#CBD5E1", family="DM Sans"),
+        bgcolor="rgba(17,24,39,0.9)",
+        bordercolor="#2d3f5c",
         borderwidth=1,
         orientation="h",
-        x=0, y=1.08,
+        x=0, y=1.09,
+        traceorder="normal",
     ),
-    margin=dict(t=80, b=140, l=20, r=20),
+    margin=dict(t=90, b=150, l=20, r=20),
     uniformtext=dict(mode="hide", minsize=7),
 ))
 st.plotly_chart(f3, use_container_width=True)
