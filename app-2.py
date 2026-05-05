@@ -18,15 +18,70 @@ css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
-[data-testid="stAppViewContainer"] { background: linear-gradient(135deg, #0a0e1a 0%, #0f1729 50%, #0a0e1a 100%); }
-[data-testid="stSidebar"] { background: #0d1220 !important; border-right: 1px solid #1e2d50; }
-h1, h2, h3 { font-family: 'Syne', sans-serif !important; }
-.mcard { background: linear-gradient(135deg, #111827, #1a2540); border: 1px solid #1e3a5f; border-radius: 16px; padding: 20px 24px; text-align: center; }
-.mcard .lbl { color: #64748b; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
-.mcard .val { color: #e2e8f0; font-size: 1.8rem; font-weight: 700; }
-.mcard .pos { color: #34d399; font-size: 0.85rem; }
-.mcard .neg { color: #f87171; font-size: 0.85rem; }
-.sec { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #93c5fd; border-left: 3px solid #3b82f6; padding-left: 12px; margin: 24px 0 16px; text-transform: uppercase; }
+
+/* Ana sayfa: ince diagonal cizgili kagit doku + sicak gri-krem degrade */
+[data-testid="stAppViewContainer"] {
+    background-color: #F0EDE8;
+    background-image:
+        linear-gradient(135deg, rgba(200,185,165,0.18) 25%, transparent 25%),
+        linear-gradient(225deg, rgba(200,185,165,0.18) 25%, transparent 25%),
+        linear-gradient(45deg,  rgba(200,185,165,0.18) 25%, transparent 25%),
+        linear-gradient(315deg, rgba(200,185,165,0.18) 25%, transparent 25%);
+    background-size: 48px 48px;
+    background-position: 0 0, 24px 0, 24px -24px, 0px 24px;
+}
+
+/* Icerik alani: hafif krem beyaz, yuzen kart etkisi */
+[data-testid="stAppViewBlockContainer"] {
+    background: rgba(250,248,245,0.82);
+    border-radius: 18px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 4px 32px rgba(120,100,80,0.10);
+    backdrop-filter: blur(2px);
+}
+
+/* Sidebar: duman grisi, ince sagdan border */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #EAE6E0 0%, #DDD8D0 100%) !important;
+    border-right: 1px solid #C8BFB0 !important;
+}
+[data-testid="stSidebar"] * { color: #2C2416 !important; }
+[data-testid="stSidebar"] .stSelectbox label { color: #5C4F3D !important; font-size: 0.82rem; letter-spacing: 0.05em; }
+
+h1, h2, h3 { font-family: 'Syne', sans-serif !important; color: #2C2416 !important; }
+
+/* Metrik kartlar: mat krem, altin kenari */
+.mcard {
+    background: linear-gradient(135deg, #FAF8F4, #F2EDE4);
+    border: 1px solid #D4C8B0;
+    border-top: 3px solid #B8A882;
+    border-radius: 14px;
+    padding: 18px 20px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(120,100,70,0.10);
+}
+.mcard .lbl { color: #8C7B65; font-size: 0.75rem; letter-spacing: 0.09em; text-transform: uppercase; margin-bottom: 6px; }
+.mcard .val { color: #2C2416; font-size: 1.7rem; font-weight: 700; font-family: 'Syne', sans-serif; }
+.mcard .pos { color: #3A7D52; font-size: 0.85rem; font-weight: 500; }
+.mcard .neg { color: #B84444; font-size: 0.85rem; font-weight: 500; }
+
+/* Bolum basliklari: altin sol cizgi */
+.sec {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #3D3020;
+    border-left: 4px solid #B8A060;
+    background: linear-gradient(90deg, rgba(184,160,96,0.10) 0%, transparent 80%);
+    padding: 8px 0 8px 14px;
+    margin: 28px 0 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 0 6px 6px 0;
+}
+
+/* Genel yazi rengi */
+p, span, label, div { color: #3D3020; }
 </style>
 """
 st.markdown(css, unsafe_allow_html=True)
@@ -365,15 +420,15 @@ else:
             "#5C0A0A",  # koyu kiremit
         ]
 
-        # Acik mavi slayt arkaplan rengi
-        SLIDE_BG    = "#DDEEFF"   # acik mavi - slayt arka plani
-        PLOT_BG     = "#EEF5FF"   # cok acik mavi - grafik ic alani
-        TITLE_COLOR = "#001F4D"   # cok koyu lacivert - maksimum okunabilirlik
-        AXIS_COLOR  = "#002B5E"   # koyu lacivert - eksen yazilari
-        GRID_COLOR  = "#AACCEE"   # orta mavi - grid cizgileri
-        DASH_COLOR  = "#7AAACE"   # orta acik mavi - dikey dashed cizgiler
-        LEGEND_BG   = "rgba(220,235,255,0.92)"  # slayta uyumlu legend arka plani
-        LEGEND_FG   = "#001F4D"   # legend yazi rengi
+        # Pastel keten/krem - akademik, sicak, beyaz kagit degil
+        SLIDE_BG    = "#F5F0E8"   # sicak keten krem
+        PLOT_BG     = "#FAF7F2"   # cok acik krem - kagit gibi degil, sicak
+        TITLE_COLOR = "#2C1F0E"   # espresso kahve - tam kontrast
+        AXIS_COLOR  = "#4A3728"   # koyu kahve - eksen yazilari
+        GRID_COLOR  = "#DDD0BC"   # kum bej - grid cizgileri
+        DASH_COLOR  = "#C4A882"   # altin bej - dikey dashed cizgiler
+        LEGEND_BG   = "rgba(245,240,232,0.94)"  # keten legend arka plani
+        LEGEND_FG   = "#2C1F0E"   # legend yazi rengi
 
         f7 = go.Figure()
 
