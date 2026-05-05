@@ -555,21 +555,40 @@ else:
         for i, (etiket, grp) in enumerate(long_df.groupby("Etiket")):
             renk = renkler[i % len(renkler)]
             grp_sorted = grp.sort_values("Yil")
+
+            # Dis cember trace (showlegend=False, sadece halka gosterir)
+            f7.add_trace(go.Scatter(
+                x=grp_sorted["Yil"],
+                y=grp_sorted["Siralama"],
+                mode="markers",
+                name=etiket,
+                showlegend=False,
+                marker=dict(
+                    size=22,
+                    color="rgba(0,0,0,0)",
+                    line=dict(color=renk, width=2.2),
+                    symbol="circle",
+                ),
+                hoverinfo="skip",
+                cliponaxis=False,
+            ))
+
+            # Ic nokta + cizgi + etiket trace (asil legend)
             f7.add_trace(go.Scatter(
                 x=grp_sorted["Yil"],
                 y=grp_sorted["Siralama"],
                 mode="lines+markers+text",
                 name=etiket,
-                line=dict(color=renk, width=3),
+                line=dict(color=renk, width=2.5),
                 marker=dict(
                     size=13,
                     color=renk,
-                    line=dict(color="#FFFFFF", width=2),
+                    line=dict(color="#FFFFFF", width=1.5),
                     symbol="circle",
                 ),
                 text=[f"{int(v):,}" for v in grp_sorted["Siralama"]],
                 textposition="top center",
-                textfont=dict(color=renk, size=12, family="DM Sans"),
+                textfont=dict(color=renk, size=13, family="DM Sans", weight=700),
                 hovertemplate=(
                     "<b>%{fullData.name}</b><br>"
                     "Yil: %{x}<br>"
@@ -609,10 +628,16 @@ else:
             leg_size    = 8
             leg_cols    = 5
 
-        # Noktaların uzerindeki etiket boyutunu guncelle
+        # Noktaların uzerindeki etiket boyutunu guncelle (ic nokta ve dis cember ayri)
         for trace in f7.data:
-            trace.marker.size = marker_size
-            trace.textfont.size = txt_size
+            if trace.mode == "markers" and trace.showlegend == False:
+                # Dis cember - daima ic noktanin 1.7 kati
+                trace.marker.size = int(marker_size * 1.7)
+            else:
+                trace.marker.size = marker_size
+                if hasattr(trace, "textfont") and trace.textfont:
+                    trace.textfont.size = txt_size + 1
+                    trace.textfont.weight = 700
 
         # Legend alt boslugu: satir sayisina gore hesapla
         leg_rows = max(1, -(-n_prog // leg_cols))   # tavan bolme
@@ -656,6 +681,9 @@ else:
                 tickfont=dict(size=12, color=AXIS_COLOR),
                 autorange="reversed",
                 range=[y_max + y_pad, y_min - y_pad],
+                tickmode="auto",
+                nticks=20,
+                showgrid=True,
             ),
             legend=dict(
                 font=dict(size=leg_size, color=LEGEND_FG, family="DM Sans"),
