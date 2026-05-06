@@ -552,9 +552,42 @@ else:
                 line=dict(color=DASH_COLOR, dash="dash", width=1.5),
             )
 
+        # Her yil icin o yilda hangi siralamalarin oldugunu topla (cakisma tespiti icin)
+        yil_siralar = {}
+        for _, grp in long_df.groupby("Etiket"):
+            for _, row in grp.iterrows():
+                yil = row["Yil"]
+                sira = row["Siralama"]
+                if yil not in yil_siralar:
+                    yil_siralar[yil] = []
+                yil_siralar[yil].append(sira)
+
+        # Her yil icin siralamalari sirala, cakisan noktalari tespit et
+        CAKISMA_ESIGI = (long_df["Siralama"].max() - long_df["Siralama"].min()) * 0.04
+
+        def cakisiyor_mu(yil, sira, yil_siralar, esik):
+            diger = [s for s in yil_siralar.get(yil, []) if s != sira]
+            return any(abs(sira - d) < esik for d in diger)
+
         for i, (etiket, grp) in enumerate(long_df.groupby("Etiket")):
             renk = renkler[i % len(renkler)]
-            grp_sorted = grp.sort_values("Yil")
+            grp_sorted = grp.sort_values("Yil").reset_index(drop=True)
+
+            # Her nokta icin textposition hesapla
+            textpos_list = []
+            text_list = []
+            for _, row in grp_sorted.iterrows():
+                yil = int(row["Yil"])
+                sira = row["Siralama"]
+                val = f"{int(sira):,}"
+                if cakisiyor_mu(yil, sira, yil_siralar, CAKISMA_ESIGI):
+                    # Cakisan noktalar: saga al, bosluksuz
+                    textpos_list.append("middle right")
+                    text_list.append("  " + val)
+                else:
+                    # Normal: ustte, bosluklu
+                    textpos_list.append("top center")
+                    text_list.append("<br>" + val)
 
             # Dis cember (halka efekti)
             f7.add_trace(go.Scatter(
@@ -586,8 +619,8 @@ else:
                     line=dict(color="#FFFFFF", width=1.5),
                     symbol="circle",
                 ),
-                text=["<br>" + f"{int(v):,}" for v in grp_sorted["Siralama"]],
-                textposition="top center",
+                text=text_list,
+                textposition=textpos_list,
                 textfont=dict(color=renk, size=13, family="DM Sans", weight=700),
                 hovertemplate=(
                     "<b>%{fullData.name}</b><br>"
@@ -695,7 +728,7 @@ else:
                 entrywidthmode="pixels",
             ),
             height=graf_h,
-            margin=dict(t=100, b=bot_margin, l=190, r=40),
+            margin=dict(t=100, b=bot_margin, l=190, r=110),
             hovermode="x unified",
         )
 
