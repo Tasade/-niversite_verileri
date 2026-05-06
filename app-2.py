@@ -531,14 +531,14 @@ else:
             "#5C0A0A",  # koyu kiremit
         ]
 
-        # Pastel keten/krem - akademik, sicak, beyaz kagit degil
-        SLIDE_BG    = "#F5F0E8"   # sicak keten krem
-        PLOT_BG     = "#FAF7F2"   # cok acik krem - kagit gibi degil, sicak
+        # Sayfa zeminiyle tam eslesen arka plan
+        SLIDE_BG    = "#EDE8E0"   # sayfa zemini ile ayni - dokulu krem
+        PLOT_BG     = "#EDE8E0"   # grafik ic alani da ayni - saydam birlesim
         TITLE_COLOR = "#2C1F0E"   # espresso kahve - tam kontrast
         AXIS_COLOR  = "#4A3728"   # koyu kahve - eksen yazilari
-        GRID_COLOR  = "#DDD0BC"   # kum bej - grid cizgileri
-        DASH_COLOR  = "#C4A882"   # altin bej - dikey dashed cizgiler
-        LEGEND_BG   = "rgba(245,240,232,0.94)"  # keten legend arka plani
+        GRID_COLOR  = "#CEC5B5"   # biraz koyulastirilmis grid - zeminde gorunsun
+        DASH_COLOR  = "#B8A482"   # altin bej - dikey dashed cizgiler
+        LEGEND_BG   = "rgba(237,232,224,0.96)"  # sayfa zemini ile uyumlu
         LEGEND_FG   = "#2C1F0E"   # legend yazi rengi
 
         f7 = go.Figure()
@@ -563,7 +563,7 @@ else:
                 yil_siralar[yil].append(sira)
 
         # Her yil icin siralamalari sirala, cakisan noktalari tespit et
-        CAKISMA_ESIGI = (long_df["Siralama"].max() - long_df["Siralama"].min()) * 0.04
+        CAKISMA_ESIGI = (long_df["Siralama"].max() - long_df["Siralama"].min()) * 0.025
 
         def cakisiyor_mu(yil, sira, yil_siralar, esik):
             diger = [s for s in yil_siralar.get(yil, []) if s != sira]
@@ -583,11 +583,11 @@ else:
                 if cakisiyor_mu(yil, sira, yil_siralar, CAKISMA_ESIGI):
                     # Cakisan noktalar: saga al, bosluksuz
                     textpos_list.append("middle right")
-                    text_list.append("  " + val)
+                    text_list.append("   " + val)
                 else:
                     # Normal: ustte, bosluklu
                     textpos_list.append("top center")
-                    text_list.append("<br>" + val)
+                    text_list.append("<br><br>" + val)
 
             # Dis cember (halka efekti)
             f7.add_trace(go.Scatter(
@@ -723,12 +723,12 @@ else:
                 bordercolor="#7AAACE",
                 borderwidth=1,
                 orientation="h",
-                x=0, y=-0.05,
+                x=0, y=-0.22,
                 entrywidth=0,
                 entrywidthmode="pixels",
             ),
             height=graf_h,
-            margin=dict(t=100, b=bot_margin, l=190, r=110),
+            margin=dict(t=100, b=bot_margin + 60, l=190, r=130),
             hovermode="x unified",
         )
 
