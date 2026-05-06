@@ -563,7 +563,7 @@ else:
                 yil_siralar[yil].append(sira)
 
         # Her yil icin siralamalari sirala, cakisan noktalari tespit et
-        CAKISMA_ESIGI = (long_df["Siralama"].max() - long_df["Siralama"].min()) * 0.025
+        CAKISMA_ESIGI = (long_df["Siralama"].max() - long_df["Siralama"].min()) * 0.06
 
         def cakisiyor_mu(yil, sira, yil_siralar, esik):
             diger = [s for s in yil_siralar.get(yil, []) if s != sira]
@@ -581,11 +581,11 @@ else:
                 sira = row["Siralama"]
                 val = f"{int(sira):,}"
                 if cakisiyor_mu(yil, sira, yil_siralar, CAKISMA_ESIGI):
-                    # Cakisan noktalar: saga al, bosluksuz
-                    textpos_list.append("middle right")
-                    text_list.append("   " + val)
+                    # Cakisan noktalar: saga al
+                    textpos_list.append("top right")
+                    text_list.append("<br>  " + val)
                 else:
-                    # Normal: ustte, bosluklu
+                    # Normal: ustte, net bosluklu
                     textpos_list.append("top center")
                     text_list.append("<br><br>" + val)
 
@@ -706,7 +706,7 @@ else:
                 range=[2022.6, 2025.4],
             ),
             yaxis=dict(
-                gridcolor=GRID_COLOR,
+                gridcolor="rgba(0,0,0,0)",
                 linecolor=GRID_COLOR,
                 color=AXIS_COLOR,
                 title=dict(text=yeksen_baslik, font=dict(color=AXIS_COLOR, size=12)),
@@ -715,7 +715,8 @@ else:
                 range=[y_max + y_pad, y_min - y_pad],
                 tickmode="auto",
                 nticks=20,
-                showgrid=True,
+                showgrid=False,
+                zeroline=False,
             ),
             legend=dict(
                 font=dict(size=leg_size, color=LEGEND_FG, family="DM Sans"),
